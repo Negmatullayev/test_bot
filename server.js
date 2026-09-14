@@ -12,6 +12,9 @@ const initBot = require('./src/bot/index');
 // Initialize Express App
 const app = express();
 
+// Trust reverse proxy (Required for Render, Heroku, Nginx rate-limiting)
+app.set('trust proxy', 1);
+
 // Connect to MongoDB
 connectDB();
 

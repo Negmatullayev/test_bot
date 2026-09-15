@@ -51,7 +51,8 @@ const seed = async () => {
     { name: 'Matematika', icon: '📘', description: 'Algebra, Geometriya va Mantiqiy masalalar', order: 4 },
     { name: 'Ingliz tili', icon: '📗', description: 'Grammar, Vocabulary va IELTS darajasi testlari', order: 5 },
     { name: 'Ona tili', icon: '📙', description: 'O‘zbek tili grammatikasi va adabiyot testlari', order: 6 },
-    { name: '11-sinf olimpiada', icon: '🏆', description: '11-sinf informatika, ma’lumotlar ombori va Delphi bo‘yicha olimpiada savollari', order: 7 }
+    { name: '11-sinf olimpiada', icon: '🏆', description: '11-sinf informatika, ma’lumotlar ombori va Delphi bo‘yicha olimpiada savollari', order: 7 },
+    { name: '10-sinf olimpiada', icon: '🏆', description: '10-sinf Python va dasturlash asoslari bo‘yicha olimpiada savollari', order: 8 }
   ];
 
   const createdSubjects = await Subject.insertMany(subjectsData);
@@ -61,6 +62,7 @@ const seed = async () => {
   const mathSubject = createdSubjects.find((s) => s.name === 'Matematika');
   const engSubject = createdSubjects.find((s) => s.name === 'Ingliz tili');
   const olympiadSubject = createdSubjects.find((s) => s.name === '11-sinf olimpiada');
+  const tenthGradeSubject = createdSubjects.find((s) => s.name === '10-sinf olimpiada');
 
   console.log('📝 Testlar yaratilmoqda...');
   
@@ -202,6 +204,75 @@ const seed = async () => {
     isAntiCheatEnabled: true,
     createdBy: adminUser._id
   });
+
+  const tenthGradeTest = await Test.create({
+    title: '10-sinf olimpiada: Python va dasturlash asoslari',
+    subjectId: tenthGradeSubject._id,
+    topic: 'Axborot, Python, algoritmlar va dasturlash asoslari',
+    description: '10-sinf o‘quvchilari uchun Python va dasturlash asoslari bo‘yicha olimpiada testi.',
+    durationMinutes: 40,
+    totalQuestions: 40,
+    pointsPerQuestion: 1,
+    passingPercentage: 60,
+    difficulty: 'medium',
+    isActive: true,
+    isAntiCheatEnabled: true,
+    createdBy: adminUser._id
+  });
+
+  const tenthGradeQuestions = [
+    ['Axborotlar qanday shakllarda uzatilishi mumkin?', ['Matnli, raqamli', 'Ovozli, grafik', 'Matnli, raqamli, ovozli va grafik', 'To‘g‘ri javob yo‘q'], 'C'],
+    ['Ma’lumotlar turi bu - ... .', ['O‘zgaruvchi yoki doimiy qiymatlardagi ma’lumotlar shakli', 'Kompyuterda berilgan ma’lumotlar', 'Dasturlash tili haqida beriladigan ma’lumotlar', 'To‘g‘ri javob yo‘q'], 'A'],
+    ['O‘zgaruvchi qabul qilgan qiymat turini qaysi funksiya yordamida aniqlash mumkin?', ['input()', 'type()', 'str()', 'len()'], 'B'],
+    ['`//` ushbu arifmetik amalning nomi nima?', ['Bo‘lish', 'Bo‘linmaning qoldig‘ini hisoblash', 'Bo‘linmaning butun qiymatini hisoblash', 'Darajaga oshirish'], 'C'],
+    ['Satr nima?', ['So‘zlar ketma-ketligi', 'Harf, son, belgi va probeldan tarkib topgan belgilar ketma-ketligi', 'Faqat harflar to‘plami', 'To‘g‘ri javob yo‘q'], 'B'],
+    ['Satr uzunligini qaysi funksiya yordamida aniqlash mumkin?', ['len()', 'print()', 'input()', 'type()'], 'A'],
+    ['Satrlarni birlashtirish uchun qaysi amal qo‘llaniladi?', ['+', '-', '/', '*'], 'A'],
+    ['Pythonda satrdagi belgilarni raqamlash nechchidan boshlanadi?', ['1 dan', '0 dan', '2 dan', '-1 dan'], 'B'],
+    ['print() qanday vazifa bajaradi?', ['Satr uzunligini aniqlaydi', 'Satrlarni birlashtiradi', 'Ma’lumotlarni ekranga chiqaradi', 'Ma’lumotlarni kiritadi'], 'C'],
+    ['end va sep print parametrlari nima uchun qo‘llaniladi?', ['Ma’lumotlarni chiqarish parametrlarini o‘zgartirish uchun', 'Python dasturiga ma’lumotlarni yozish uchun', 'O‘zgaruvchini o‘chirish uchun', 'To‘g‘ri javob yo‘q'], 'A'],
+    ['Dasturlash jarayonida asosan necha xil algoritmdan foydalaniladi?', ['2 xil', '3 xil', '5 xil', '4 xil'], 'B'],
+    ['Buyruqlarning qat’iy ketma-ketlikda tartib bilan bajarilishi nima deb ataladi?', ['Algoritm', 'Dasturlash jarayoni', 'Chiziqli algoritm', 'Tarmoqlanuvchi algoritm'], 'C'],
+    ['Chiziqli algoritmlarning dastur shaklida yozilishiga nima deyiladi?', ['Chiziqli dastur', 'Chiziqli algoritm', 'Sikl', 'To‘g‘ri javob yo‘q'], 'A'],
+    ['Amallarning qat’iy ketma-ketlikda bajarilishi nima deb ataladi?', ['Chiziqli dastur', 'Chiziqli ijro', 'Tarmoqlanuvchi algoritm', 'Chiziqli algoritm'], 'D'],
+    ['O‘zgaruvchilarni taqqoslash uchun qanday amallardan foydalaniladi?', ['Sodda amallardan', 'Mantiqiy amallardan', 'Arifmetik amallardan', 'To‘g‘ri javob yo‘q'], 'B'],
+    ['Taqqoslash amallariga qaysi amallar kiradi?', ['<, >, ==, !=', '<, =, +, -', '>, +, =', '+, -, *, /'], 'A'],
+    ['Biror shartga ko‘ra buyruqlar ketma-ketligining bajarilishi yoki bajarilmasligini belgilovchi algoritm nima deb ataladi?', ['Dasturlash algoritmi', 'Tekshiruvchi algoritm', 'Tarmoqlanuvchi algoritm', 'Chiziqli algoritm'], 'C'],
+    ['if operatori tarkibidagi shart True qiymat qaytarsa, buyruqlar bloki bajariladimi?', ['Yo‘q', 'Ha', 'Faqat False bo‘lsa', 'Bajarilmaydi'], 'B'],
+    ['Buyruqlar bloki if operatoridan keyingi satrda xat boshidan nechta probel qoldirib yoziladi?', ['4 ta', '8 ta', '2 ta', 'Probel qoldirmay'], 'A'],
+    ['Shartni tekshirish uchun qaysi operatordan foydalaniladi?', ['print()', 'if', 'for', 'while'], 'B'],
+    ['Shartdan kelib chiqib, mos buyruqlar ketma-ketligini bajaradigan ifning takomillashgan ko‘rinishi qaysi?', ['elif operatori', 'if operatori', 'case operatori', 'for operatori'], 'A'],
+    ['elif so‘zi qanday ma’noni anglatadi?', ['Aks holda agar', 'Rost va yolg‘on', 'Takrorlash', 'To‘g‘ri javob yo‘q'], 'A'],
+    ['Murakkab shartli ifodalarni yozish uchun nimalardan foydalaniladi?', ['Operatorlardan', 'Mantiqiy amallardan', 'Taqqoslash amallaridan', 'Barcha javoblar to‘g‘ri'], 'D'],
+    ['`==` belgisi qanday nomlanadi?', ['Teng emas', 'Katta yoki teng', 'Aynan teng', 'Qiymat berish'], 'C'],
+    ['`\t` belgisining nomi nima?', ['Tabulyatsiya belgisi', 'Yangi satrga o‘tish belgisi', 'Bittalik qo‘shtirnoq belgisi', 'Bo‘sh joy belgisi'], 'A'],
+    ['Chiziqli tuzilishga ega algoritm blok-sxemasi asosan nimalar yordamida tuziladi?', ['Algoritmni boshlash va tugatish bloki', 'Kiritish/chiqarish va funksional bloklar', 'Ulanish chiziqlari', 'Barcha javoblar to‘g‘ri'], 'D'],
+    ['Bir chiziq bo‘ylab joylashgan, ketma-ket bajariladigan ko‘rsatmalar to‘plami ko‘rinishidagi algoritm nima?', ['Chiziqli algoritm', 'Chiziqli tuzilish', 'Tarmoqlanuvchi algoritm', 'To‘g‘ri javob yo‘q'], 'A'],
+    ['Hozirgi kunda keng tarqalgan dasturlash tillari qaysi qatorda berilgan?', ['Pascal, Delphi, C, C++', 'Java, Python', 'JavaScript, Python, C++', 'Barcha javoblar to‘g‘ri'], 'D'],
+    ['Tarmoqlanuvchi struktura odatda qandaydir mantiqiy shartni nimani o‘z ichiga oladi?', ['Tekshirish blokini', 'Tarmoqlanuvchi tuzilishni', 'Kiritish blokini', 'To‘g‘ri javob yo‘q'], 'A'],
+    ['Parametrning har xil qiymatlari asosida algoritmda takrorlanish yuz beradigan jarayonlarga nima deyiladi?', ['Tarmoqlanuvchi algoritm', 'Takrorlanuvchi algoritm', 'Tekshiriluvchi algoritm', 'Chiziqli algoritm'], 'B'],
+    ['Hisoblash jarayonining ko‘p marta takrorlanadigan qismi nima deb yuritiladi?', ['SUMM', 'PRODUCT', 'Sikl tanasi', 'Ichki sikl tanasi'], 'C'],
+    ['Tarkibida bir necha turdagi algoritmlar qatnashgan algoritmga nima deyiladi?', ['Aralash algoritm', 'Tarmoqlanuvchi algoritm', 'Tekshiruvchi algoritm', 'Chiziqli algoritm'], 'A'],
+    ['Kompyuter uchun dastur tuzish jarayoni nima deyiladi?', ['Kompyuter dasturi', 'Dasturlash', 'Dasturchi', 'Algoritm'], 'B'],
+    ['Kompyuterda biror masalani hal qilish uchun eng avvalo nima qilinadi?', ['Kompyuterga yoziladi', 'Dastur tuziladi', 'Modeli va algoritmi tuziladi', 'Natija chiqariladi'], 'C'],
+    ['Yaratilgan matn kompyuter tilida nima deb ataladi?', ['Yozilgan dastur', 'Tuzilgan dastur', 'Algoritm', 'Kodlovchi'], 'A'],
+    ['Dastur tuzuvchi shaxs nima deb yuritiladi?', ['Dasturchi', 'Foydalanuvchi', 'Operator', 'To‘g‘ri javob yo‘q'], 'A'],
+    ['Kir yuvish mashinasi ham dasturlash asosida ishlaydimi?', ['Yo‘q', 'Ha', 'Faqat mexanik rejimda', 'To‘g‘ri javob yo‘q'], 'B'],
+    ['Kompyuter tushunadigan va muloqot olib boradigan “til” nima deb ataladi?', ['Dastur', 'Dasturlash tili', 'Dasturlash algoritmi', 'Ma’lumotlar turi'], 'B'],
+    ['Translyator nima?', ['Dastur turi', 'Dasturchi nomi', 'Kompyuter qurilmasi', 'Dastur kodini tarjima qiluvchi vosita'], 'D'],
+    ['IDE so‘zining to‘liq nomi nima?', ['Integrated Development Environment', 'Integrated Development', 'Internet Development Editor', 'To‘g‘ri javob yo‘q'], 'A']
+  ].map(([questionText, optionTexts, correctAnswer]) => ({
+    testId: tenthGradeTest._id,
+    subjectId: tenthGradeSubject._id,
+    questionText,
+    options: optionTexts.map((text, index) => ({
+      key: String.fromCharCode(65 + index),
+      text
+    })),
+    correctAnswer,
+    difficulty: 'medium',
+    points: 1
+  }));
 
   console.log('❓ Savollar bazasi to‘ldirilmoqda...');
   const questionsData = [
@@ -1553,7 +1624,9 @@ const seed = async () => {
       correctAnswer: 'D',
       difficulty: 'easy',
       points: 1
-    }
+    },
+
+    ...tenthGradeQuestions
   ];
 
   await Question.insertMany(questionsData);

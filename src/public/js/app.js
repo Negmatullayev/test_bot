@@ -210,7 +210,7 @@ async function loadDashboardStats() {
   const res = await apiFetch('/api/statistics/dashboard');
   if (!res || !res.data) return;
 
-  const { summary, dailyTests, subjectDistribution, topStudents, recentResults } = res.data;
+  const { summary, dailyTests, subjectDistribution, olympiadStats = [], topStudents, recentResults } = res.data;
 
   document.getElementById('stat-total-users').innerText = summary.totalUsers || 0;
   document.getElementById('stat-active-today').innerText = `Bugun faol: ${summary.activeTodayUsersCount || 0}`;
@@ -222,6 +222,24 @@ async function loadDashboardStats() {
   // Charts
   if (typeof initCharts === 'function') {
     initCharts(dailyTests, subjectDistribution);
+  }
+
+  const olympiadTbody = document.getElementById('olympiad-stats-tbody');
+  if (olympiadTbody) {
+    olympiadTbody.innerHTML = olympiadStats.length === 0
+      ? '<tr><td colspan="5" class="text-center">Olimpiada testlari mavjud emas</td></tr>'
+      : olympiadStats.map((test) => {
+        const isReady = test.questionCount >= test.totalQuestions;
+        return `
+          <tr>
+            <td><b>${test.title}</b></td>
+            <td>${test.totalQuestions} ta</td>
+            <td>${test.questionCount} ta</td>
+            <td>${test.durationMinutes} daqiqa</td>
+            <td><span class="badge ${isReady ? 'badge-active' : 'badge-medium'}">${isReady ? 'Tayyor' : 'Tekshirish kerak'}</span></td>
+          </tr>
+        `;
+      }).join('');
   }
 
   // Top students table

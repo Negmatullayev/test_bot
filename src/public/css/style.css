@@ -575,6 +575,19 @@ body {
   padding: 22px;
 }
 
+.olympiad-monitor-card {
+  margin-bottom: 26px;
+}
+
+.olympiad-monitor-card .card-header {
+  align-items: flex-start;
+}
+
+.olympiad-monitor-card .card-header small {
+  display: block;
+  margin-top: 6px;
+}
+
 /* CUSTOM TABLES */
 .table-responsive {
   overflow-x: auto;

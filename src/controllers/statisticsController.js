@@ -69,6 +69,33 @@ exports.getDashboardStats = async (req, res, next) => {
       { $limit: 6 }
     ]);
 
+    const olympiadStats = await Test.aggregate([
+      {
+        $match: {
+          title: { $regex: '^1[01]-sinf olimpiada', $options: 'i' },
+          isActive: true
+        }
+      },
+      {
+        $lookup: {
+          from: 'questions',
+          localField: '_id',
+          foreignField: 'testId',
+          as: 'questions'
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          totalQuestions: 1,
+          questionCount: { $size: '$questions' },
+          durationMinutes: 1
+        }
+      },
+      { $sort: { title: 1 } }
+    ]);
+
     // Top students
     const topStudents = await User.find({ role: 'user', isBlocked: false })
       .sort({ totalScore: -1 })
@@ -95,6 +122,7 @@ exports.getDashboardStats = async (req, res, next) => {
         },
         dailyTests: dailyTestsAgg,
         subjectDistribution: subjectDistributionAgg,
+        olympiadStats,
         topStudents,
         recentResults
       }

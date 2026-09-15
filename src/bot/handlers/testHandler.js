@@ -254,6 +254,7 @@ async function renderQuestion(ctx, attempt, questionIndex) {
     }
 
     const totalQ = attempt.questions.length;
+    questionIndex = Math.max(0, Math.min(Number(questionIndex) || 0, totalQ - 1));
     const currentQ = attempt.questions[questionIndex];
 
     if (!currentQ) {
@@ -294,11 +295,13 @@ async function renderQuestion(ctx, attempt, questionIndex) {
           ...keyboard
         });
       } catch (e) {
-        // If message cannot be edited (e.g. content identical or expired), reply fresh
-        await ctx.reply(text, {
-          parse_mode: 'HTML',
-          ...keyboard
-        });
+        // Telegram may reject an edit when the callback is stale or unchanged.
+        if (!String(e.message || '').toLowerCase().includes('message is not modified')) {
+          await ctx.reply(text, {
+            parse_mode: 'HTML',
+            ...keyboard
+          });
+        }
       }
     } else {
       await ctx.reply(text, {
@@ -329,7 +332,11 @@ async function handleAnswerOption(ctx, attemptId, qIndex, optionKey) {
     }
 
     const question = attempt.questions[Number(qIndex)];
-    if (!question) return;
+    if (!question) return ctx.answerCbQuery('Savol topilmadi. Testni qayta boshlang.');
+
+    if (!question.options.some((option) => option.key === optionKey)) {
+      return ctx.answerCbQuery('Bu variant mavjud emas.');
+    }
 
     const qKey = question.questionId ? question.questionId.toString() : qIndex.toString();
     attempt.answers.set(qKey, optionKey);
@@ -578,13 +585,16 @@ async function handleGetCertificate(ctx, resultId) {
 
     if (!cert) {
       const certNumber = 'CERT-' + Date.now().toString().slice(-8);
+      const appUrl = (process.env.APP_URL || process.env.RENDER_EXTERNAL_URL || 'https://test-bot-vcjo.onrender.com').replace(/\/$/, '');
+      const verifyUrl = `${appUrl}/api/certificates/verify/${certNumber}`;
       const filePath = await generateCertificatePdf({
         certificateNumber: certNumber,
         userName,
         testTitle: result.testTitle,
         subjectTitle: result.subjectTitle || 'Bilim Sinovi',
         percentage: result.percentage,
-        issueDate: result.createdAt
+        issueDate: result.createdAt,
+        verifyUrl
       });
 
       cert = await Certificate.create({
@@ -598,6 +608,7 @@ async function handleGetCertificate(ctx, resultId) {
         subjectTitle: result.subjectTitle,
         percentage: result.percentage,
         score: result.score,
+        qrCodeData: verifyUrl,
         pdfFilePath: filePath
       });
 

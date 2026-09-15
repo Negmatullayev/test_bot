@@ -12,7 +12,7 @@ async function generateCertificatePdf(certificateData) {
     userName,
     testTitle,
     subjectTitle,
-    percentage,
+      percentage,
       issueDate,
       verifyUrl: providedVerifyUrl
   } = certificateData;
@@ -58,6 +58,16 @@ async function generateCertificatePdf(certificateData) {
       doc.rect(0, 0, width, height).fill('#081c2c');
       doc.circle(width - 90, 55, 130).fillOpacity(0.08).fill('#38bdf8').fillOpacity(1);
       doc.circle(55, height - 45, 105).fillOpacity(0.06).fill('#f6c453').fillOpacity(1);
+
+      // Subtle repeated brand watermark behind the certificate content.
+      doc.save();
+      doc.rotate(-24, { origin: [width / 2, height / 2] });
+      doc.fontSize(34)
+         .fillColor('#ffffff')
+         .fillOpacity(0.035)
+         .text('BILIM SINOVI  •  TELEGRAM QUIZ BOT', 105, 220, { width: 630, align: 'center' })
+         .text('BILIM SINOVI  •  TELEGRAM QUIZ BOT', 90, 330, { width: 660, align: 'center' });
+      doc.restore();
 
       // Decorative outer border
       doc.rect(20, 20, width - 40, height - 40)

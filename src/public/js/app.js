@@ -1030,20 +1030,37 @@ async function loadCertificates() {
     return;
   }
 
-  tbody.innerHTML = res.data.map((c) => `
+  tbody.innerHTML = res.data.map((c) => {
+    const tgId = c.telegramId || c.userId?.telegramId;
+    const tgBadge = tgId
+      ? `<span class="badge badge-info" style="font-size:0.75rem; margin-left: 5px;"><i class="fa-brands fa-telegram"></i> ${tgId}</span>`
+      : '';
+
+    return `
     <tr>
       <td><code>${c.certificateNumber}</code></td>
-      <td><b>${escapeHtml(c.userName)}</b></td>
-      <td>${c.testTitle}</td>
-      <td><span class="badge badge-easy">${c.percentage}%</span></td>
-      <td>${new Date(c.issueDate).toLocaleDateString('uz-UZ')}</td>
       <td>
-        <a href="/api/certificates/${c._id}/download" class="btn btn-primary btn-sm" target="_blank">
-          <i class="fa-solid fa-download"></i> PDF
-        </a>
+        <b>${escapeHtml(c.userName)}</b>
+        ${tgBadge}
+      </td>
+      <td>${escapeHtml(c.testTitle)}</td>
+      <td><span class="badge badge-easy">${c.percentage}%</span></td>
+      <td>${new Date(c.issueDate || c.createdAt).toLocaleDateString('uz-UZ')}</td>
+      <td>
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <a href="/api/certificates/${c._id}/download" class="btn btn-primary btn-sm" target="_blank" title="PDF Yuklab olish">
+            <i class="fa-solid fa-download"></i> PDF
+          </a>
+          <button class="btn btn-info btn-sm" onclick="promptSendCertToTg('${c._id}', ${tgId || 'null'}, '${escapeHtml(c.userName).replace(/'/g, "\\'")}')" title="Telegramga jo‘natish">
+            <i class="fa-brands fa-telegram"></i> Jo‘natish
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="deleteCertificate('${c._id}')" title="O‘chirish">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
       </td>
     </tr>
-  `).join('');
+  `}).join('');
 
   renderPagination('certificates-pagination', res.page, res.pages, (p) => {
     state.certificatesPage = p;
@@ -1052,6 +1069,113 @@ async function loadCertificates() {
 }
 
 document.getElementById('cert-search')?.addEventListener('input', debounce(loadCertificates, 400));
+
+// Create Certificate Button Click
+document.getElementById('btn-create-cert')?.addEventListener('click', () => {
+  document.getElementById('form-certificate').reset();
+  document.getElementById('cert-percentage').value = 100;
+  document.getElementById('cert-subject-title').value = 'O‘zbekiston';
+  document.getElementById('cert-test-title').value = 'O‘zbekiston: Mustaqillik va Davlat Ramzlari';
+  document.getElementById('cert-send-telegram').checked = true;
+  openModal('modal-certificate');
+});
+
+// Create Certificate Form Submit
+document.getElementById('form-certificate')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const userName = document.getElementById('cert-user-name').value.trim();
+  const telegramId = document.getElementById('cert-telegram-id').value.trim();
+  const percentage = document.getElementById('cert-percentage').value.trim();
+  const subjectTitle = document.getElementById('cert-subject-title').value.trim();
+  const testTitle = document.getElementById('cert-test-title').value.trim();
+  const sendTelegram = document.getElementById('cert-send-telegram').checked;
+
+  if (!userName) {
+    showToast('O‘quvchi ism-familiyasini kiriting', 'error');
+    return;
+  }
+
+  showToast('Sertifikat yaratilmoqda...', 'info');
+
+  const res = await apiFetch('/api/certificates', {
+    method: 'POST',
+    body: JSON.stringify({
+      userName,
+      telegramId: telegramId ? Number(telegramId) : null,
+      percentage: Number(percentage) || 100,
+      subjectTitle,
+      testTitle,
+      sendTelegram
+    })
+  });
+
+  if (res && res.success) {
+    showToast(res.message || 'Sertifikat muvaffaqiyatli yaratildi!', 'success');
+    closeModal('modal-certificate');
+    loadCertificates();
+  } else {
+    showToast(res?.message || 'Sertifikat yaratishda xatolik yuz berdi', 'error');
+  }
+});
+
+// Prompt or directly send Certificate to Telegram
+function promptSendCertToTg(certId, existingTgId, userName) {
+  if (existingTgId) {
+    if (confirm(`${userName} (Telegram ID: ${existingTgId}) ga ushbu sertifikatni Telegram bot orqali jo‘natishni tasdiqlaysizmi?`)) {
+      sendCertToTelegramDirect(certId, existingTgId);
+    }
+  } else {
+    document.getElementById('send-cert-id').value = certId;
+    document.getElementById('send-cert-telegram-id').value = '';
+    document.getElementById('send-cert-desc').innerHTML = `<b>${userName}</b> uchun sertifikatni jo‘natish uchun Telegram ID raqamini kiriting:`;
+    openModal('modal-send-cert-tg');
+  }
+}
+
+// Send Certificate to Telegram Directly
+async function sendCertToTelegramDirect(certId, telegramId) {
+  showToast('Telegramga yuborilmoqda...', 'info');
+  const res = await apiFetch(`/api/certificates/${certId}/send-telegram`, {
+    method: 'POST',
+    body: JSON.stringify({ telegramId })
+  });
+
+  if (res && res.success) {
+    showToast(res.message || 'Sertifikat Telegramga muvaffaqiyatli yuborildi!', 'success');
+    loadCertificates();
+  } else {
+    showToast(res?.message || 'Telegramga yuborishda xatolik yuz berdi', 'error');
+  }
+}
+
+// Send Certificate Modal Form Submit
+document.getElementById('form-send-cert-tg')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const certId = document.getElementById('send-cert-id').value;
+  const telegramId = document.getElementById('send-cert-telegram-id').value.trim();
+
+  if (!telegramId) {
+    showToast('Telegram ID ni kiriting', 'error');
+    return;
+  }
+
+  closeModal('modal-send-cert-tg');
+  await sendCertToTelegramDirect(certId, Number(telegramId));
+});
+
+// Delete Certificate
+async function deleteCertificate(id) {
+  if (!confirm('Haqiqatan ham bu sertifikatni o‘chirmoqchimisiz?')) return;
+
+  const res = await apiFetch(`/api/certificates/${id}`, { method: 'DELETE' });
+  if (res && res.success) {
+    showToast('Sertifikat o‘chirildi', 'success');
+    loadCertificates();
+  } else {
+    showToast(res?.message || 'O‘chirishda xatolik', 'error');
+  }
+}
+
 
 // MODAL UTILS
 function openModal(modalId) {

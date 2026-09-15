@@ -567,6 +567,12 @@
               <i class="fa-solid fa-magnifying-glass"></i>
               <input type="text" id="cert-search" placeholder="Sertifikat ID yoki o‘quvchi ismi...">
             </div>
+            <div class="toolbar-filters">
+              <button id="btn-create-cert" class="btn btn-primary">
+                <i class="fa-solid fa-award"></i>
+                <span>Yangi Sertifikat Berish</span>
+              </button>
+            </div>
           </div>
 
           <div class="table-card glass-card mt-4">
@@ -861,6 +867,84 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-close="modal-user-stats">Yopish</button>
       </div>
+    </div>
+  </div>
+
+  <!-- 6. CREATE CERTIFICATE MODAL -->
+  <div id="modal-certificate" class="modal-backdrop">
+    <div class="modal-card glass-card">
+      <div class="modal-header">
+        <h3 id="modal-certificate-title"><i class="fa-solid fa-award"></i> Yangi Sertifikat Berish</h3>
+        <button class="btn-close" data-close="modal-certificate">&times;</button>
+      </div>
+      <form id="form-certificate">
+        <div class="form-group">
+          <label>O‘quvchi Ism-Familiyasi *</label>
+          <input type="text" id="cert-user-name" placeholder="Masalan: Ali Valiyev" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label>O‘quvchi Telegram ID (ixtiyoriy)</label>
+            <input type="number" id="cert-telegram-id" placeholder="Masalan: 123456789">
+            <small class="form-hint text-muted">Telegramdan to‘g‘ridan-to‘g‘ri yuborish uchun ID kerak</small>
+          </div>
+          <div class="form-group flex-1">
+            <label>Natija (%) *</label>
+            <input type="number" id="cert-percentage" value="100" min="1" max="100" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label>Fan / Yo‘nalish *</label>
+            <input type="text" id="cert-subject-title" placeholder="Masalan: O‘zbekiston yoki Informatika" value="O‘zbekiston" required>
+          </div>
+          <div class="form-group flex-2">
+            <label>Test Nomi / Taqdirlov Mavzusi *</label>
+            <input type="text" id="cert-test-title" placeholder="Masalan: Mustaqillik va Davlat Ramzlari" value="O‘zbekiston: Mustaqillik va Davlat Ramzlari" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" id="cert-send-telegram" checked>
+            <span><i class="fa-brands fa-telegram text-primary"></i> Sertifikat yaratilgach, Telegram bot orqali foydalanuvchiga yuborilsin</span>
+          </label>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="modal-certificate">Bekor qilish</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fa-solid fa-file-pdf"></i> Sertifikatni Yaratish
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 7. SEND CERTIFICATE TO TELEGRAM MODAL -->
+  <div id="modal-send-cert-tg" class="modal-backdrop">
+    <div class="modal-card glass-card">
+      <div class="modal-header">
+        <h3><i class="fa-brands fa-telegram text-primary"></i> Telegramga Sertifikat Jo‘natish</h3>
+        <button class="btn-close" data-close="modal-send-cert-tg">&times;</button>
+      </div>
+      <form id="form-send-cert-tg">
+        <input type="hidden" id="send-cert-id">
+        <p id="send-cert-desc" class="mb-3 text-muted">Sertifikat o‘quvchiga Telegram orqali yuboriladi.</p>
+        <div class="form-group">
+          <label>Foydalanuvchi Telegram ID raqami *</label>
+          <input type="number" id="send-cert-telegram-id" placeholder="Masalan: 123456789" required>
+          <small class="form-hint text-muted">Foydalanuvchi botga kamida 1 marta /start bosgan bo‘lishi lozim</small>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="modal-send-cert-tg">Bekor qilish</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fa-solid fa-paper-plane"></i> Yuborish
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 

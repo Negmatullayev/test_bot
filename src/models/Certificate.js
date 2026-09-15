@@ -11,12 +11,12 @@ const certificateSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      default: null,
       index: true
     },
     telegramId: {
       type: Number,
-      required: true
+      default: null
     },
     userName: {
       type: String,
@@ -30,7 +30,7 @@ const certificateSchema = new mongoose.Schema(
     resultId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Result',
-      required: true
+      default: null
     },
     testTitle: {
       type: String,

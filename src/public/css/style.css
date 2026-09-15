@@ -118,6 +118,14 @@ body {
   background: #dc2626;
 }
 
+.btn-info {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #fff;
+}
+.btn-info:hover {
+  background: #0284c7;
+}
+
 .btn-sm {
   padding: 6px 12px;
   font-size: 0.8rem;
@@ -159,6 +167,7 @@ body {
 .badge-active { background: rgba(16, 185, 129, 0.15); color: #34d399; }
 .badge-inactive { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
 .badge-blocked { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+.badge-info { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
 
 /* Status Dot */
 .status-dot {

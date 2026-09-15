@@ -14,7 +14,8 @@ async function generateCertificatePdf(certificateData) {
     subjectTitle,
       percentage,
       issueDate,
-      verifyUrl: providedVerifyUrl
+      verifyUrl: providedVerifyUrl,
+      botLink: providedBotLink
   } = certificateData;
 
   const certDir = path.join(__dirname, '../../certificates');
@@ -40,8 +41,9 @@ async function generateCertificatePdf(certificateData) {
          const botUsername = process.env.BOT_USERNAME || 'AbubakrTest2026Bot';
          const botUrl = `https://t.me/${botUsername}`;
          const verifyUrl = providedVerifyUrl || `${appUrl}/api/certificates/verify/${certificateNumber}`;
+         const botLink = providedBotLink || `${botUrl}?start=cert_${certificateNumber}`;
          const issueDateText = new Date(issueDate).toLocaleDateString('uz-UZ');
-         const qrData = verifyUrl;
+         const qrData = botLink;
       const qrBuffer = await QRCode.toBuffer(qrData, {
             width: 128,
             margin: 2,

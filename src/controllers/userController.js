@@ -1,6 +1,12 @@
 const User = require('../models/User');
 const Result = require('../models/Result');
 const Achievement = require('../models/Achievement');
+const { sendTelegramMessage } = require('../services/botService');
+
+const escapeTelegramHtml = (value) => String(value)
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;');
 
 // @desc    Get all users with search, filter, pagination
 // @route   GET /api/users
@@ -86,6 +92,41 @@ exports.toggleBlockUser = async (req, res, next) => {
       success: true,
       message: user.isBlocked ? 'Foydalanuvchi bloklandi' : 'Foydalanuvchi blokdan chiqarildi',
       data: user
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// @desc    Send a private message to a student through Telegram
+// @route   POST /api/users/:id/message
+// @access  Admin
+exports.sendUserMessage = async (req, res, next) => {
+  try {
+    const { message } = req.body;
+    const user = await User.findOne({ _id: req.params.id, role: 'user' });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'O‘quvchi topilmadi' });
+    }
+    if (!user.telegramId) {
+      return res.status(400).json({ success: false, message: 'O‘quvchining Telegram ID si mavjud emas' });
+    }
+    if (!message || !String(message).trim()) {
+      return res.status(400).json({ success: false, message: 'Xabar matnini kiriting' });
+    }
+
+    const text = `📩 <b>Admin xabari</b>\n\n${escapeTelegramHtml(String(message).trim())}`;
+    const sent = await sendTelegramMessage(user.telegramId, text);
+
+    if (!sent) {
+      return res.status(502).json({ success: false, message: 'Telegram xabarni yuborib bo‘lmadi' });
+    }
+
+    res.json({
+      success: true,
+      message: `${user.firstName || 'O‘quvchi'}ga xabar yuborildi`,
+      data: { telegramId: user.telegramId, message: String(message).trim() }
     });
   } catch (err) {
     next(err);

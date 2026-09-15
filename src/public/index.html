@@ -388,27 +388,11 @@
                   <label><i class="fa-solid fa-book"></i> Fanni tanlang *</label>
                   <select id="bulk-subject-select" required>
                     <option value="">Fan tanlang...</option>
-                    <option value="specific_user">Bitta o‘quvchi</option>
                   </select>
                 </div>
 
-                <div class="form-group" id="notif-specific-user-wrap" style="display: none;">
-                  <label><i class="fa-solid fa-user"></i> O‘quvchini tanlang</label>
-                  <select id="notif-specific-user">
-                    <option value="">O‘quvchilar yuklanmoqda...</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label><i class="fa-solid fa-wand-magic-sparkles"></i> Tezkor shablon</label>
-                  <div class="quick-actions">
-                    <button type="button" class="btn btn-secondary btn-sm notif-template" data-title="Yangi olimpiada testi" data-message="Yangi olimpiada testi botga qo‘shildi. Bilimingizni sinab ko‘ring!
                 <div class="form-group flex-1">
                   <label><i class="fa-solid fa-file-signature"></i> Testni tanlang (Ixtiyoriy)</label>
-                    <button type="button" class="btn btn-secondary btn-sm notif-template" data-title="Sertifikat tabrigi" data-message="Sizning sertifikatingiz tayyor! Natijangiz bilan tabriklaymiz.">Tabrik</button>
-                    <button type="button" class="btn btn-secondary btn-sm notif-template" data-title="Muhim e’lon" data-message="Hurmatli o‘quvchilar, siz uchun muhim yangilik bor.">E’lon</button>
-                  </div>
-                </div>
                   <select id="bulk-test-select">
                     <option value="">Alohida testga biriktirmaslik (Umumiy baza)</option>
                   </select>
@@ -569,7 +553,24 @@
                   <select id="notif-target" required>
                     <option value="all">Barcha o‘quvchilar</option>
                     <option value="active_users">So‘nggi 3 kunda faol bo‘lganlar</option>
+                    <option value="specific_user">Bitta o'quvchi</option>
                   </select>
+                </div>
+
+                <div class="form-group" id="notif-specific-user-wrap" style="display: none;">
+                  <label><i class="fa-solid fa-user"></i> O'quvchini tanlang</label>
+                  <select id="notif-specific-user">
+                    <option value="">O'quvchilar yuklanmoqda...</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label><i class="fa-solid fa-wand-magic-sparkles"></i> Tezkor shablon</label>
+                  <div class="quick-actions">
+                    <button type="button" class="btn btn-secondary btn-sm notif-template" data-title="Yangi olimpiada testi" data-message="Yangi olimpiada testi botga qo'shildi. Bilimingizni sinab ko'ring!">Olimpiada</button>
+                    <button type="button" class="btn btn-secondary btn-sm notif-template" data-title="Sertifikat tabrigi" data-message="Sizning sertifikatingiz tayyor! Natijangiz bilan tabriklaymiz.">Tabrik</button>
+                    <button type="button" class="btn btn-secondary btn-sm notif-template" data-title="Muhim e'lon" data-message="Hurmatli o'quvchilar, siz uchun muhim yangilik bor.">E'lon</button>
+                  </div>
                 </div>
 
                 <div class="form-group">
@@ -923,7 +924,33 @@
     </div>
   </div>
 
-  <!-- 6. CREATE CERTIFICATE MODAL -->
+  <!-- 6. USER CHAT MODAL -->
+  <div id="modal-user-chat" class="modal-backdrop">
+    <div class="modal-card glass-card chat-modal-card">
+      <div class="modal-header">
+        <div>
+          <h3><i class="fa-brands fa-telegram text-primary"></i> O‘quvchi bilan chat</h3>
+          <small id="chat-user-meta" class="text-muted">Telegram foydalanuvchisi</small>
+        </div>
+        <button class="btn-close" data-close="modal-user-chat">&times;</button>
+      </div>
+      <div id="user-chat-history" class="user-chat-history">
+        <div class="chat-empty-state"><i class="fa-regular fa-comments"></i><span>Hali xabar yuborilmagan</span></div>
+      </div>
+      <form id="form-user-chat">
+        <input type="hidden" id="chat-user-id">
+        <div class="form-group chat-compose">
+          <textarea id="chat-message" rows="3" maxlength="2000" placeholder="O‘quvchiga xabar yozing..." required></textarea>
+          <div class="form-meta">
+            <small class="form-hint text-muted"><span id="chat-char-count">0</span>/2000</small>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Yuborish</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 7. CREATE CERTIFICATE MODAL -->
   <div id="modal-certificate" class="modal-backdrop">
     <div class="modal-card glass-card">
       <div class="modal-header">

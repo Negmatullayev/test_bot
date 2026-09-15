@@ -819,6 +819,9 @@ async function loadUsers() {
         <button class="btn btn-secondary btn-sm" onclick="viewUserStats('${u._id}')" title="Statistika">
           <i class="fa-solid fa-chart-simple"></i>
         </button>
+        <button class="btn btn-info btn-sm" onclick="openUserChat('${u._id}', '${escapeHtml(`${u.firstName || ''} ${u.lastName || ''}`.trim() || u.username || 'O‘quvchi').replace(/'/g, "\\'")}', '${u.telegramId || ''}')" title="O‘quvchiga chat yozish" ${u.telegramId ? '' : 'disabled'}>
+          <i class="fa-brands fa-telegram"></i>
+        </button>
         <button class="btn ${u.isBlocked ? 'btn-success' : 'btn-danger'} btn-sm" onclick="toggleBlockUser('${u._id}')" title="${u.isBlocked ? 'Blokdan chiqarish' : 'Bloklash'}">
           <i class="fa-solid ${u.isBlocked ? 'fa-lock-open' : 'fa-ban'}"></i>
         </button>
@@ -910,6 +913,56 @@ async function viewUserStats(id) {
   document.getElementById('user-stats-title').innerText = `${user.firstName || ''} ${user.lastName || ''} (@${user.username || 'yo‘q'})`;
   openModal('modal-user-stats');
 }
+
+const userChatMessages = new Map();
+
+function openUserChat(userId, userName, telegramId) {
+  document.getElementById('chat-user-id').value = userId;
+  document.getElementById('chat-user-meta').innerText = `${userName} · Telegram ID: ${telegramId || 'mavjud emas'}`;
+  document.getElementById('chat-message').value = '';
+  document.getElementById('chat-char-count').innerText = '0';
+  renderUserChatHistory(userId);
+  openModal('modal-user-chat');
+}
+
+function renderUserChatHistory(userId) {
+  const history = document.getElementById('user-chat-history');
+  const messages = userChatMessages.get(userId) || [];
+  history.innerHTML = messages.length === 0
+    ? '<div class="chat-empty-state"><i class="fa-regular fa-comments"></i><span>Hali xabar yuborilmagan</span></div>'
+    : messages.map((item) => `<div class="chat-bubble admin-bubble"><span>${escapeHtml(item.message)}</span><small>${item.time}</small></div>`).join('');
+  history.scrollTop = history.scrollHeight;
+}
+
+document.getElementById('chat-message')?.addEventListener('input', (event) => {
+  document.getElementById('chat-char-count').innerText = event.target.value.length;
+});
+
+document.getElementById('form-user-chat')?.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const userId = document.getElementById('chat-user-id').value;
+  const field = document.getElementById('chat-message');
+  const message = field.value.trim();
+  if (!userId || !message) return;
+
+  const res = await apiFetch(`/api/users/${userId}/message`, {
+    method: 'POST',
+    body: JSON.stringify({ message })
+  });
+
+  if (!res || !res.success) {
+    showToast(res?.message || 'Xabar yuborilmadi', 'error');
+    return;
+  }
+
+  const messages = userChatMessages.get(userId) || [];
+  messages.push({ message, time: new Date().toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' }) });
+  userChatMessages.set(userId, messages);
+  field.value = '';
+  document.getElementById('chat-char-count').innerText = '0';
+  renderUserChatHistory(userId);
+  showToast(res.message, 'success');
+});
 
 // 7. RESULTS
 async function loadResults() {

@@ -185,6 +185,69 @@ body {
   font-size: 0.78rem;
 }
 
+.chat-modal-card {
+  width: min(560px, calc(100vw - 32px));
+}
+
+.chat-modal-card .modal-header {
+  align-items: flex-start;
+}
+
+.user-chat-history {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 180px;
+  max-height: 300px;
+  margin: 4px 0 18px;
+  padding: 14px;
+  overflow-y: auto;
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+}
+
+.chat-empty-state {
+  display: flex;
+  flex: 1;
+  min-height: 150px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+.chat-empty-state i {
+  font-size: 1.6rem;
+}
+
+.chat-bubble {
+  display: flex;
+  flex-direction: column;
+  align-self: flex-end;
+  gap: 5px;
+  max-width: 82%;
+  padding: 10px 13px;
+  color: #e0f2fe;
+  background: rgba(37, 99, 235, 0.8);
+  border-radius: 12px 12px 3px 12px;
+  font-size: 0.88rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.chat-bubble small {
+  color: rgba(224, 242, 254, 0.7);
+  font-size: 0.68rem;
+  text-align: right;
+}
+
+.chat-compose {
+  margin-bottom: 0;
+}
+
 .btn-block {
   width: 100%;
 }

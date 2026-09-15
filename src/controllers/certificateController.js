@@ -78,6 +78,8 @@ exports.createCertificate = async (req, res, next) => {
 
     const certNumber = 'CERT-' + Date.now().toString().slice(-8);
     const issueDate = new Date();
+    const appUrl = (process.env.APP_URL || process.env.RENDER_EXTERNAL_URL || 'https://test-bot-vcjo.onrender.com').replace(/\/$/, '');
+    const verifyUrl = `${appUrl}/api/certificates/verify/${certNumber}`;
 
     // 1. Generate PDF
     const filePath = await generateCertificatePdf({
@@ -86,7 +88,8 @@ exports.createCertificate = async (req, res, next) => {
       testTitle: testTitle.trim(),
       subjectTitle: subjectTitle.trim(),
       percentage: Number(percentage) || 100,
-      issueDate
+      issueDate,
+      verifyUrl
     });
 
     // 2. Save Certificate to Database
@@ -100,6 +103,7 @@ exports.createCertificate = async (req, res, next) => {
       percentage: Number(percentage) || 100,
       score: Number(score) || 100,
       issueDate,
+      qrCodeData: verifyUrl,
       pdfFilePath: filePath
     });
 
@@ -156,7 +160,8 @@ exports.sendCertificateToTelegram = async (req, res, next) => {
         testTitle: cert.testTitle,
         subjectTitle: cert.subjectTitle,
         percentage: cert.percentage,
-        issueDate: cert.issueDate
+        issueDate: cert.issueDate,
+        verifyUrl: cert.qrCodeData
       });
       cert.pdfFilePath = filePath;
       await cert.save();

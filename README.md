@@ -75,6 +75,10 @@ MONGODB_URI=mongodb+srv://abubakrnigmatullayev56_db_user:<db_password>@cluster0.
 
 # BotFather'dan olingan token
 BOT_TOKEN=7777777777:AAFakeTokenForLocalDevReplaceWithRealOne
+BOT_USERNAME=AbubakrTest2026Bot
+
+# Sertifikatdagi tekshiruv va bot havolalari
+APP_URL=https://test-bot-vcjo.onrender.com
 
 # Xavfsizlik kaliti
 JWT_SECRET=super_secret_jwt_key_quiz_bot_uz_2026_x99!

@@ -69,8 +69,9 @@ Loyiha ildizidagi `.env` faylini oching va qiymatlarni o‘zingizga moslang:
 PORT=5000
 NODE_ENV=development
 
-# MongoDB ulanishi (Lokal yoki MongoDB Atlas)
-MONGODB_URI=mongodb://127.0.0.1:27017/uz_quiz_bot
+# MongoDB ulanishi (MongoDB Atlas)
+# Render Environment Variables bo‘limida haqiqiy qiymatni kiriting.
+MONGODB_URI=mongodb+srv://abubakrnigmatullayev56_db_user:<db_password>@cluster0.rrfpd6l.mongodb.net/uz_quiz_bot?retryWrites=true&w=majority&appName=Cluster0
 
 # BotFather'dan olingan token
 BOT_TOKEN=7777777777:AAFakeTokenForLocalDevReplaceWithRealOne

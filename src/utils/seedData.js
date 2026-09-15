@@ -67,6 +67,7 @@ const seed = async () => {
   const progSubject = createdSubjects.find((s) => s.name === 'Dasturlash');
   const mathSubject = createdSubjects.find((s) => s.name === 'Matematika');
   const engSubject = createdSubjects.find((s) => s.name === 'Ingliz tili');
+  const nativeLanguageSubject = createdSubjects.find((s) => s.name === 'Ona tili');
   const olympiadSubject = createdSubjects.find((s) => s.name === '11-sinf olimpiada');
   const tenthGradeSubject = createdSubjects.find((s) => s.name === '10-sinf olimpiada');
 
@@ -196,6 +197,21 @@ const seed = async () => {
     createdBy: adminUser._id
   });
 
+  const nativeLanguageTest = await Test.create({
+    title: 'Ona tili: Grammatika va imlo',
+    subjectId: nativeLanguageSubject._id,
+    topic: 'So‘z turkumlari, gap bo‘laklari va imlo qoidalari',
+    description: 'O‘zbek tili grammatikasi va imlo qoidalari bo‘yicha 20 ta savol.',
+    durationMinutes: 20,
+    totalQuestions: 20,
+    pointsPerQuestion: 1,
+    passingPercentage: 60,
+    difficulty: 'medium',
+    isActive: true,
+    isAntiCheatEnabled: true,
+    createdBy: adminUser._id
+  });
+
   const olympiadTest = await Test.create({
     title: '11-sinf olimpiada: Informatika va dasturlash',
     subjectId: olympiadSubject._id,
@@ -275,6 +291,37 @@ const seed = async () => {
       key: String.fromCharCode(65 + index),
       text
     })),
+    correctAnswer,
+    difficulty: 'medium',
+    points: 1
+  }));
+
+  const nativeLanguageQuestions = [
+    ['O‘zbek tilida nechta unli tovush bor?', ['5 ta', '6 ta', '7 ta', '8 ta'], 'B'],
+    ['Qaysi qatorda faqat otlar berilgan?', ['Kitob, daftar, maktab', 'Chiroyli, katta, baland', 'Bormoq, kelmoq, yozmoq', 'Tez, sekin, bugun'], 'A'],
+    ['Sifat qanday so‘roqlarga javob bo‘ladi?', ['Kim? nima?', 'Nima qildi?', 'Qanday? qanaqa?', 'Qachon?'], 'C'],
+    ['Fe’l nimani bildiradi?', ['Predmet nomini', 'Harakat yoki holatni', 'Belgini', 'Miqdorni'], 'B'],
+    ['Son so‘z turkumi nimani bildiradi?', ['Predmetning belgisini', 'Harakatni', 'Predmetning miqdori yoki tartibini', 'Joyni'], 'C'],
+    ['Olmoshning asosiy xususiyati qaysi?', ['Ot, sifat, son o‘rnida qo‘llanadi', 'Faqat harakatni bildiradi', 'Faqat belgini bildiradi', 'Gap oxirida keladi'], 'A'],
+    ['“O‘quvchilar kitob o‘qidilar” gapida ega qaysi?', ['Kitob', 'O‘qidilar', 'O‘quvchilar', 'Gapda ega yo‘q'], 'C'],
+    ['“Bahorda gullar ochiladi” gapida kesim qaysi?', ['Bahorda', 'Gullar', 'Ochiladi', 'Bahorda gullar'], 'C'],
+    ['Qaysi gap darak gap hisoblanadi?', ['Bugun darsga borasanmi?', 'Vatanimiz obod bo‘lsin!', 'Bugun havo iliq.', 'Kitobni o‘qi!'], 'C'],
+    ['So‘roq gap oxiriga qaysi tinish belgisi qo‘yiladi?', ['Nuqta', 'Vergul', 'So‘roq belgisi', 'Ikki nuqta'], 'C'],
+    ['Undalma qatnashgan gapni toping.', ['Aziz do‘stim, seni kutdim.', 'Men maktabga bordim.', 'Bugun yomg‘ir yog‘di.', 'U kitob o‘qidi.'], 'A'],
+    ['Qaysi so‘z to‘g‘ri yozilgan?', ['ma’sul', 'mas’ul', 'masul', 'maʼsuliyat'], 'B'],
+    ['“Gulzor” so‘zi qaysi usul bilan yasalgan?', ['Qo‘shimcha qo‘shish', 'So‘zlarni qo‘shish', 'Qisqartirish', 'Takrorlash'], 'A'],
+    ['Sinonim so‘zlar qatorini toping.', ['Katta-kichik', 'Chiroyli-go‘zal', 'Oq-qora', 'Yoz-qish'], 'B'],
+    ['Antonim so‘zlar qatorini toping.', ['Go‘zal-chiroyli', 'Vatan-yurt', 'Issiq-sovuq', 'Tez-chaqqon'], 'C'],
+    ['“Maktabning bog‘i” birikmasida “maktabning” qanday bo‘lak?', ['Qaratqich aniqlovchi', 'Sifatlovchi aniqlovchi', 'To‘ldiruvchi', 'Hol'], 'A'],
+    ['Ko‘plik qo‘shimchasi qaysi?', ['-chi', '-lik', '-lar', '-kor'], 'C'],
+    ['Qaysi qatorda ravish berilgan?', ['Chiroyli', 'Bugun', 'Kitob', 'Yugurdi'], 'B'],
+    ['“Men do‘stimga xat yozdim” gapida “do‘stimga” qanday bo‘lak?', ['Ega', 'Kesim', 'To‘ldiruvchi', 'Hol'], 'C'],
+    ['Qo‘shma so‘zni toping.', ['Gul', 'Ota-ona', 'Kitob', 'Chiroyli'], 'B']
+  ].map(([questionText, optionTexts, correctAnswer]) => ({
+    testId: nativeLanguageTest._id,
+    subjectId: nativeLanguageSubject._id,
+    questionText,
+    options: optionTexts.map((text, index) => ({ key: String.fromCharCode(65 + index), text })),
     correctAnswer,
     difficulty: 'medium',
     points: 1
@@ -1632,7 +1679,8 @@ const seed = async () => {
       points: 1
     },
 
-    ...tenthGradeQuestions
+    ...tenthGradeQuestions,
+    ...nativeLanguageQuestions
   ];
 
   await Question.insertMany(questionsData);

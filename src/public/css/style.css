@@ -594,6 +594,31 @@ body {
   color: var(--text-dim);
 }
 
+.mini-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.mini-stat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+}
+
+.mini-stat span {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.mini-stat b {
+  color: var(--text-main);
+  font-size: 1rem;
+}
+
 .charts-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -932,5 +957,8 @@ body {
   }
   .form-row {
     flex-direction: column;
+  }
+  .mini-stats-grid {
+    grid-template-columns: 1fr;
   }
 }

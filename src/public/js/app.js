@@ -794,6 +794,10 @@ async function loadUsers() {
   const res = await apiFetch(`/api/users${query}`);
   const tbody = document.getElementById('users-tbody');
 
+  document.getElementById('users-visible-count').innerText = res?.data?.length || 0;
+  document.getElementById('users-total-count').innerText = res?.total || 0;
+  document.getElementById('users-status-label').innerText = status === 'active' ? 'Aktiv' : status === 'blocked' ? 'Bloklangan' : 'Barchasi';
+
   if (!res || !res.data || res.data.length === 0) {
     tbody.innerHTML = `<tr><td colspan="8" class="text-center">O‘quvchilar topilmadi</td></tr>`;
     return;
@@ -827,6 +831,12 @@ async function loadUsers() {
 
 document.getElementById('users-search')?.addEventListener('input', debounce(loadUsers, 400));
 document.getElementById('users-filter-status')?.addEventListener('change', () => { state.usersPage = 1; loadUsers(); });
+document.getElementById('users-clear-filters')?.addEventListener('click', () => {
+  document.getElementById('users-search').value = '';
+  document.getElementById('users-filter-status').value = '';
+  state.usersPage = 1;
+  loadUsers();
+});
 
 async function toggleBlockUser(id) {
   const res = await apiFetch(`/api/users/${id}/block`, { method: 'PUT' });

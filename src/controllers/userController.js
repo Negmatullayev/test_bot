@@ -9,8 +9,7 @@ exports.getUsers = async (req, res, next) => {
   try {
     const { search, role, isBlocked, page = 1, limit = 20 } = req.query;
 
-    const query = {};
-    if (role) query.role = role;
+    const query = { role: role || 'user' };
     if (typeof isBlocked !== 'undefined') query.isBlocked = isBlocked === 'true';
 
     if (search) {

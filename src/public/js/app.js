@@ -1078,7 +1078,7 @@ async function loadNotifications() {
   const tbody = document.getElementById('notifications-tbody');
 
   if (!res || !res.data || res.data.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="4" class="text-center">Xabarnomalar yo‘q</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" class="text-center">Xabarnomalar yo‘q</td></tr>`;
     return;
   }
 
@@ -1088,8 +1088,20 @@ async function loadNotifications() {
       <td>${n.targetType === 'all' ? 'Barcha o‘quvchilar' : n.targetType === 'specific_user' ? `Bitta: ${escapeHtml(n.specificUserId?.firstName || 'o‘quvchi')}` : 'Faol o‘quvchilar'}</td>
       <td><span class="badge badge-active">${n.sentCount} ta</span></td>
       <td>${new Date(n.createdAt).toLocaleDateString('uz-UZ')}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="deleteNotification('${n._id}')" title="Yuborilgan xabar tarixini o‘chirish"><i class="fa-solid fa-trash"></i></button></td>
     </tr>
   `).join('');
+}
+
+async function deleteNotification(id) {
+  if (!confirm('Ushbu yuborilgan xabar tarixini o‘chirasizmi? Telegramdagi xabarlar o‘chirilmaydi.')) return;
+  const res = await apiFetch(`/api/notifications/${id}`, { method: 'DELETE' });
+  if (res && res.success) {
+    showToast(res.message, 'success');
+    loadNotifications();
+  } else {
+    showToast(res?.message || 'Xabarnomani o‘chirishda xatolik', 'error');
+  }
 }
 
 async function loadUserChoices(selectId, emptyLabel = 'O‘quvchini tanlang') {

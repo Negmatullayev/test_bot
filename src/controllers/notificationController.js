@@ -81,3 +81,20 @@ exports.sendNotification = async (req, res, next) => {
     next(err);
   }
 };
+
+// @desc    Delete a notification history record
+// @route   DELETE /api/notifications/:id
+// @access  Admin
+exports.deleteNotification = async (req, res, next) => {
+  try {
+    const notification = await Notification.findById(req.params.id);
+    if (!notification) {
+      return res.status(404).json({ success: false, message: 'Xabarnoma topilmadi' });
+    }
+
+    await notification.deleteOne();
+    res.json({ success: true, message: 'Xabarnoma tarixi o‘chirildi' });
+  } catch (err) {
+    next(err);
+  }
+};

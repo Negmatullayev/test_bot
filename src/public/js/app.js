@@ -1007,24 +1007,65 @@ async function loadNotifications() {
   tbody.innerHTML = res.data.map((n) => `
     <tr>
       <td><b>${escapeHtml(n.title)}</b><br><small class="text-dim">${escapeHtml(n.message).slice(0, 40)}...</small></td>
-      <td>${n.targetType === 'all' ? 'Barcha o‘quvchilar' : 'Faol o‘quvchilar'}</td>
+      <td>${n.targetType === 'all' ? 'Barcha o‘quvchilar' : n.targetType === 'specific_user' ? `Bitta: ${escapeHtml(n.specificUserId?.firstName || 'o‘quvchi')}` : 'Faol o‘quvchilar'}</td>
       <td><span class="badge badge-active">${n.sentCount} ta</span></td>
       <td>${new Date(n.createdAt).toLocaleDateString('uz-UZ')}</td>
     </tr>
   `).join('');
 }
 
+async function loadUserChoices(selectId, emptyLabel = 'O‘quvchini tanlang') {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+  const res = await apiFetch('/api/users?role=user&limit=100');
+  if (!res || !res.data) return;
+  select.innerHTML = `<option value="">${emptyLabel}</option>` + res.data.map((user) => {
+    const name = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || 'Nomsiz o‘quvchi';
+    return `<option value="${user._id}" data-name="${escapeHtml(name)}" data-telegram="${user.telegramId || ''}">${escapeHtml(name)}${user.telegramId ? ` — ${user.telegramId}` : ''}</option>`;
+  }).join('');
+}
+
+document.getElementById('notif-target')?.addEventListener('change', async (event) => {
+  const isSpecific = event.target.value === 'specific_user';
+  document.getElementById('notif-specific-user-wrap').style.display = isSpecific ? 'block' : 'none';
+  if (isSpecific) await loadUserChoices('notif-specific-user');
+});
+
+document.querySelectorAll('.notif-template').forEach((button) => {
+  button.addEventListener('click', () => {
+    document.getElementById('notif-title').value = button.dataset.title;
+    document.getElementById('notif-message').value = button.dataset.message;
+    document.getElementById('notif-message').dispatchEvent(new Event('input'));
+  });
+});
+
+document.getElementById('notif-message')?.addEventListener('input', (event) => {
+  document.getElementById('notif-char-count').innerText = event.target.value.length;
+});
+
+document.getElementById('notif-preview-btn')?.addEventListener('click', () => {
+  const title = document.getElementById('notif-title').value.trim() || 'Xabarnoma sarlavhasi';
+  const message = document.getElementById('notif-message').value.trim() || 'Xabar matni shu yerda ko‘rinadi.';
+  showToast(`${title}\n\n${message}`, 'info');
+});
+
 document.getElementById('broadcast-form')?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const title = document.getElementById('notif-title').value.trim();
   const message = document.getElementById('notif-message').value.trim();
   const targetType = document.getElementById('notif-target').value;
+  const specificUserId = document.getElementById('notif-specific-user').value;
 
-  if (!confirm('Ushbu xabarni barcha o‘quvchilarga Telegram orqali yuborishni tasdiqlaysizmi?')) return;
+  if (targetType === 'specific_user' && !specificUserId) {
+    showToast('O‘quvchini tanlang', 'error');
+    return;
+  }
+
+  if (!confirm('Ushbu xabarni tanlangan qabul qiluvchiga Telegram orqali yuborishni tasdiqlaysizmi?')) return;
 
   const res = await apiFetch('/api/notifications', {
     method: 'POST',
-    body: JSON.stringify({ title, message, targetType })
+    body: JSON.stringify({ title, message, targetType, specificUserId: specificUserId || null })
   });
 
   if (res && res.success) {
@@ -1095,7 +1136,32 @@ document.getElementById('btn-create-cert')?.addEventListener('click', () => {
   document.getElementById('cert-subject-title').value = 'O‘zbekiston';
   document.getElementById('cert-test-title').value = 'O‘zbekiston: Mustaqillik va Davlat Ramzlari';
   document.getElementById('cert-send-telegram').checked = true;
+  loadUserChoices('cert-user-select');
+  document.getElementById('certificate-preview').style.display = 'none';
   openModal('modal-certificate');
+});
+
+document.getElementById('cert-user-select')?.addEventListener('change', (event) => {
+  const option = event.target.selectedOptions[0];
+  if (!option?.value) return;
+  document.getElementById('cert-user-name').value = option.dataset.name || '';
+  document.getElementById('cert-telegram-id').value = option.dataset.telegram || '';
+  updateCertificatePreview();
+});
+
+function updateCertificatePreview() {
+  const preview = document.getElementById('certificate-preview');
+  if (!preview) return;
+  const name = document.getElementById('cert-user-name').value.trim() || 'O‘QUVCHI ISMI';
+  const test = document.getElementById('cert-test-title').value.trim() || 'Test nomi';
+  const subject = document.getElementById('cert-subject-title').value.trim() || 'Fan';
+  const percentage = document.getElementById('cert-percentage').value || 100;
+  preview.innerHTML = `<span class="preview-label">SERTIFIKAT PREVIEW</span><strong>${escapeHtml(name.toUpperCase())}</strong><small>${escapeHtml(test)} · ${escapeHtml(subject)}</small><b>NATIJA ${percentage}%</b>`;
+  preview.style.display = 'flex';
+}
+
+['cert-user-name', 'cert-test-title', 'cert-subject-title', 'cert-percentage'].forEach((id) => {
+  document.getElementById(id)?.addEventListener('input', updateCertificatePreview);
 });
 
 // Create Certificate Form Submit

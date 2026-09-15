@@ -388,10 +388,27 @@
                   <label><i class="fa-solid fa-book"></i> Fanni tanlang *</label>
                   <select id="bulk-subject-select" required>
                     <option value="">Fan tanlang...</option>
+                    <option value="specific_user">Bitta o‘quvchi</option>
                   </select>
                 </div>
+
+                <div class="form-group" id="notif-specific-user-wrap" style="display: none;">
+                  <label><i class="fa-solid fa-user"></i> O‘quvchini tanlang</label>
+                  <select id="notif-specific-user">
+                    <option value="">O‘quvchilar yuklanmoqda...</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label><i class="fa-solid fa-wand-magic-sparkles"></i> Tezkor shablon</label>
+                  <div class="quick-actions">
+                    <button type="button" class="btn btn-secondary btn-sm notif-template" data-title="Yangi olimpiada testi" data-message="Yangi olimpiada testi botga qo‘shildi. Bilimingizni sinab ko‘ring!
                 <div class="form-group flex-1">
                   <label><i class="fa-solid fa-file-signature"></i> Testni tanlang (Ixtiyoriy)</label>
+                    <button type="button" class="btn btn-secondary btn-sm notif-template" data-title="Sertifikat tabrigi" data-message="Sizning sertifikatingiz tayyor! Natijangiz bilan tabriklaymiz.">Tabrik</button>
+                    <button type="button" class="btn btn-secondary btn-sm notif-template" data-title="Muhim e’lon" data-message="Hurmatli o‘quvchilar, siz uchun muhim yangilik bor.">E’lon</button>
+                  </div>
+                </div>
                   <select id="bulk-test-select">
                     <option value="">Alohida testga biriktirmaslik (Umumiy baza)</option>
                   </select>
@@ -553,7 +570,8 @@
 
                 <div class="form-group">
                   <label><i class="fa-solid fa-message"></i> Xabar matni *</label>
-                  <textarea id="notif-message" rows="5" placeholder="Hurmatli o‘quvchilar, bugun yangi testlar yuklandi..." required></textarea>
+                  <textarea id="notif-message" rows="5" maxlength="1000" placeholder="Hurmatli o‘quvchilar, bugun yangi testlar yuklandi..." required></textarea>
+                  <div class="form-meta"><small class="form-hint text-muted"><span id="notif-char-count">0</span>/1000 belgi</small><button type="button" id="notif-preview-btn" class="btn btn-secondary btn-sm"><i class="fa-solid fa-eye"></i> Preview</button></div>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block">
@@ -905,6 +923,14 @@
       </div>
       <form id="form-certificate">
         <div class="form-group">
+          <label><i class="fa-solid fa-user-check"></i> Bazadagi o‘quvchini tanlash</label>
+          <select id="cert-user-select">
+            <option value="">Qo‘lda kiritish</option>
+          </select>
+          <small class="form-hint text-muted">Tanlansa ism va Telegram ID avtomatik to‘ldiriladi</small>
+        </div>
+
+        <div class="form-group">
           <label>O‘quvchi Ism-Familiyasi *</label>
           <input type="text" id="cert-user-name" placeholder="Masalan: Ali Valiyev" required>
         </div>
@@ -938,6 +964,8 @@
             <span><i class="fa-brands fa-telegram text-primary"></i> Sertifikat yaratilgach, Telegram bot orqali foydalanuvchiga yuborilsin</span>
           </label>
         </div>
+
+        <div id="certificate-preview" class="certificate-preview" style="display: none;"></div>
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-close="modal-certificate">Bekor qilish</button>

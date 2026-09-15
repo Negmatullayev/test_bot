@@ -92,6 +92,8 @@ Barcha fanlar, testlar, namunaviy savollar va admin hisobini bazaga yuklash uchu
 npm run seed
 ```
 
+> `npm run seed` mavjud ma’lumotlarni o‘chirmaslik uchun default holatda to‘xtaydi. Faqat barcha ma’lumotlarni tozalab, boshidan yaratish kerak bo‘lsa, `RESET_DATABASE=true npm run seed` buyrug‘idan foydalaning.
+
 > **Default Admin:**
 > - **Login:** `admin`
 > - **Parol:** `admin123`

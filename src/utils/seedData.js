@@ -21,6 +21,12 @@ const connectDB = async () => {
 const seed = async () => {
   await connectDB();
 
+  if (process.env.RESET_DATABASE !== 'true') {
+    console.log('⚠️ Seed bekor qilindi: mavjud ma’lumotlarni o‘chirmaslik uchun RESET_DATABASE=true belgilang.');
+    await mongoose.disconnect();
+    return;
+  }
+
   console.log('🧹 Eski test ma’lumotlari tozalanmoqda...');
   await Promise.all([
     User.deleteMany({}),
@@ -1631,91 +1637,6 @@ const seed = async () => {
 
   await Question.insertMany(questionsData);
   console.log(`✅ ${questionsData.length} ta savol muvaffaqiyatli yuklandi.`);
-
-  // Create demo mock students for leaderboard preview
-  console.log('🏆 Namunaviy o‘quvchilar va reyting yaratilmoqda...');
-  const student1 = await User.create({
-    telegramId: 10001,
-    firstName: 'Abubakr',
-    lastName: 'Qodirov',
-    username: 'abubakr_dev',
-    role: 'user',
-    totalTests: 25,
-    totalQuestions: 250,
-    totalCorrect: 235,
-    totalWrong: 15,
-    totalScore: 980,
-    xp: 1470,
-    level: 3,
-    levelName: 'Advanced',
-    bestScore: 98,
-    bestSubject: 'Dasturlash'
-  });
-
-  const student2 = await User.create({
-    telegramId: 10002,
-    firstName: 'Ali',
-    lastName: 'Valiyev',
-    username: 'ali_uz',
-    role: 'user',
-    totalTests: 20,
-    totalQuestions: 200,
-    totalCorrect: 180,
-    totalWrong: 20,
-    totalScore: 920,
-    xp: 1380,
-    level: 3,
-    levelName: 'Advanced',
-    bestScore: 95,
-    bestSubject: 'Matematika'
-  });
-
-  const student3 = await User.create({
-    telegramId: 10003,
-    firstName: 'Hasan',
-    lastName: 'Karimov',
-    username: 'hasan_k',
-    role: 'user',
-    totalTests: 18,
-    totalQuestions: 180,
-    totalCorrect: 160,
-    totalWrong: 20,
-    totalScore: 870,
-    xp: 1250,
-    level: 3,
-    levelName: 'Advanced',
-    bestScore: 90,
-    bestSubject: 'Ingliz tili'
-  });
-
-  // Sample Result
-  await Result.create({
-    userId: student1._id,
-    telegramId: student1.telegramId,
-    testId: jsTest._id,
-    testTitle: jsTest.title,
-    subjectTitle: progSubject.name,
-    totalQuestions: 6,
-    correctCount: 6,
-    wrongCount: 0,
-    percentage: 100,
-    score: 90,
-    totalPossibleScore: 60,
-    timeSpentSeconds: 180,
-    evaluationBadge: "A'lo",
-    passed: true,
-    answersDetails: [
-      {
-        questionText: "Node.js nima?",
-        selectedOption: 'B',
-        selectedText: 'JavaScript runtime environment (muhiti)',
-        correctOption: 'B',
-        correctText: 'JavaScript runtime environment (muhiti)',
-        isCorrect: true,
-        explanation: 'Node.js bu V8 motorida ishlovchi runtime.'
-      }
-    ]
-  });
 
   console.log('🎉 Seed jarayoni muvaffaqiyatli yakunlandi!');
   console.log('--------------------------------------------------');

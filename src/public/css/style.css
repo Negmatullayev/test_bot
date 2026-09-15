@@ -491,9 +491,11 @@ body {
 .main-wrapper {
   flex: 1;
   margin-left: var(--sidebar-width);
-  min-height: 100vh;
+  height: 100vh;
+  min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* TOPBAR */
@@ -536,6 +538,9 @@ body {
 .content-body {
   padding: 30px;
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .tab-pane {

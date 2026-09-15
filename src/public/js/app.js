@@ -126,6 +126,8 @@ document.querySelectorAll('.sidebar-menu .nav-item').forEach((link) => {
 function switchTab(tabName) {
   state.currentTab = tabName;
   window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  document.querySelector('.content-body')?.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  document.querySelector('.sidebar-menu')?.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   document.querySelectorAll('.sidebar-menu .nav-item').forEach((item) => {
     item.classList.toggle('active', item.dataset.tab === tabName);
   });

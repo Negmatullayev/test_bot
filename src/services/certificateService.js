@@ -54,111 +54,93 @@ async function generateCertificatePdf(certificateData) {
       const width = doc.page.width;
       const height = doc.page.height;
 
-      // Premium navy background with a warm certificate accent.
-      doc.rect(0, 0, width, height).fill('#081c2c');
-      doc.circle(width - 90, 55, 130).fillOpacity(0.08).fill('#38bdf8').fillOpacity(1);
-      doc.circle(55, height - 45, 105).fillOpacity(0.06).fill('#f6c453').fillOpacity(1);
+      // Original paper-style layout: ivory paper, navy ink, and a gold ribbon.
+      doc.rect(0, 0, width, height).fill('#f7f2e8');
+      doc.rect(0, 0, 76, height).fill('#102a43');
+      doc.rect(76, 0, 8, height).fill('#d8a93a');
 
-      // Subtle repeated brand watermark behind the certificate content.
+      // Light watermark with the bot name behind the certificate text.
       doc.save();
-      doc.rotate(-24, { origin: [width / 2, height / 2] });
-      doc.fontSize(34)
-         .fillColor('#ffffff')
-         .fillOpacity(0.035)
-         .text('BILIM SINOVI  •  TELEGRAM QUIZ BOT', 105, 220, { width: 630, align: 'center' })
-         .text('BILIM SINOVI  •  TELEGRAM QUIZ BOT', 90, 330, { width: 660, align: 'center' });
+      doc.rotate(-90, { origin: [width / 2, height / 2] });
+      doc.fontSize(40)
+         .fillColor('#102a43')
+         .fillOpacity(0.045)
+         .text('BILIM SINOVI  •  TELEGRAM QUIZ BOT', 120, 385, { width: 520, align: 'center' });
       doc.restore();
 
-      // Decorative outer border
-      doc.rect(20, 20, width - 40, height - 40)
-         .lineWidth(2.5)
-         .stroke('#f6c453');
-
-      // Inner border
-      doc.rect(28, 28, width - 56, height - 56)
+      // Double frame and corner ornaments.
+      doc.rect(105, 28, width - 133, height - 56)
+         .lineWidth(2)
+         .stroke('#102a43');
+      doc.rect(113, 36, width - 149, height - 72)
          .lineWidth(1)
-         .stroke('#2d5870');
+         .stroke('#d8a93a');
+      [[105, 28], [width - 28, 28], [105, height - 28], [width - 28, height - 28]].forEach(([x, y]) => {
+        doc.circle(x, y, 5).fill('#d8a93a');
+      });
 
-      // Header accent
-      doc.rect(35, 35, width - 70, 8)
-         .fill('#38bdf8');
-
-      doc.fontSize(11)
-         .fillColor('#f6c453')
-         .text('BILIM SINOVI  •  RASMIY TASDIQNOMA', 0, 60, { align: 'center', characterSpacing: 1.5 });
-
-      // Certificate Title
-      doc.fontSize(28)
-         .fillColor('#f8fafc')
-         .text('SERTIFIKAT', 0, 82, { align: 'center', characterSpacing: 4 });
-
-      doc.fontSize(12)
-         .fillColor('#9fc4d5')
-         .text('MUVAFFAQIYATLI YAKUNLANGANLIK TO‘G‘RISIDA', 0, 121, { align: 'center', characterSpacing: 1.5 });
-
-      // Body text
-      doc.fontSize(14)
-         .fillColor('#c7dce5')
-         .text('Ushbu sertifikat quyidagi o‘quvchiga taqdim etiladi:', 0, 158, { align: 'center' });
-
-      // Recipient Name
-      doc.fontSize(26)
-         .fillColor('#38d6c7')
-         .text(userName.toUpperCase(), 0, 194, { align: 'center', underline: false });
-
-      // Divider
-      doc.moveTo(width / 2 - 150, 230)
-         .lineTo(width / 2 + 150, 230)
-         .lineWidth(1.5)
-         .stroke('#f6c453');
-
-      // Test details
-      doc.fontSize(14)
-         .fillColor('#e2e8f0')
-         .text(
-           `"${testTitle}" (${subjectTitle}) bo‘yicha bilim sinovida`,
-           0,
-           250,
-           { align: 'center' }
-         );
-
-      doc.fontSize(16)
-         .fillColor('#f6c453')
-         .text(`Natija: ${percentage}% ball to‘plaganligi uchun`, 0, 280, { align: 'center' });
-
-      // QR Code
-      doc.image(qrBuffer, 65, height - 180, { width: 112, height: 112 });
-      doc.fontSize(9)
-         .fillColor('#9fc4d5')
-         .text('QR orqali tekshirish', 65, height - 60, { width: 112, align: 'center' });
-      doc.fontSize(8)
-         .fillColor('#6f9caf')
-         .text(certificateNumber, 65, height - 46, { width: 112, align: 'center' });
-
-      // Seal & Signature
-      const rightX = width - 220;
-      doc.fontSize(11)
-         .fillColor('#c7dce5')
-         .text(`Sana: ${issueDateText}`, rightX, height - 142);
-
-      doc.fontSize(12)
-         .fillColor('#38d6c7')
-         .text('Bilim Sinovi', rightX, height - 116);
-
+      // Brand mark on the side ribbon.
       doc.fontSize(10)
-         .fillColor('#9fc4d5')
-         .text(`Telegram: @${botUsername}`, rightX, height - 96);
-      doc.fontSize(9)
-         .fillColor('#6f9caf')
-         .text('Raqamli tasdiqlangan hujjat', rightX, height - 78);
+         .fillColor('#f7f2e8')
+         .text('BILIM', 23, 218, { width: 30, align: 'center', characterSpacing: 1 });
+      doc.fontSize(10)
+         .text('SINOVI', 17, 235, { width: 42, align: 'center', characterSpacing: 1 });
+      doc.moveTo(23, 270).lineTo(61, 270).lineWidth(1).stroke('#d8a93a');
+      doc.fontSize(8)
+         .text(`@${botUsername}`, 10, 286, { width: 56, align: 'center' });
 
-      // Clickable links remain useful when the PDF is opened digitally.
+      doc.fontSize(11)
+         .fillColor('#b0811b')
+         .text('RASMIY BILIM TASDIQNOMASI', 105, 66, { width: width - 133, align: 'center', characterSpacing: 2 });
+      doc.fontSize(33)
+         .fillColor('#102a43')
+         .text('SERTIFIKAT', 105, 91, { width: width - 133, align: 'center', characterSpacing: 5 });
+      doc.fontSize(11)
+         .fillColor('#526777')
+         .text('MUVAFFAQIYATLI YAKUNLANGANLIK TO‘G‘RISIDA', 105, 137, { width: width - 133, align: 'center', characterSpacing: 1.5 });
+
+      doc.fontSize(14)
+         .fillColor('#526777')
+         .text('Ushbu sertifikat quyidagi o‘quvchiga taqdim etiladi:', 105, 176, { width: width - 133, align: 'center' });
+      doc.fontSize(27)
+         .fillColor('#102a43')
+         .text(userName.toUpperCase(), 105, 207, { width: width - 133, align: 'center' });
+      doc.moveTo(270, 247).lineTo(width - 115, 247).lineWidth(1.5).stroke('#d8a93a');
+
+      doc.fontSize(13)
+         .fillColor('#304b5d')
+         .text(`"${testTitle}"`, 150, 267, { width: width - 225, align: 'center' });
+      doc.fontSize(11)
+         .fillColor('#526777')
+         .text(`${subjectTitle} bo‘yicha bilim sinovida`, 150, 289, { width: width - 225, align: 'center' });
+
+      // Highlighted result pill.
+      doc.roundedRect(width / 2 - 92, 320, 184, 38, 19).fill('#102a43');
+      doc.fontSize(16)
+         .fillColor('#f7f2e8')
+         .text(`NATIJA  ${percentage}%`, width / 2 - 92, 331, { width: 184, align: 'center' });
+
+      // QR verification block.
+      doc.image(qrBuffer, 137, height - 171, { width: 108, height: 108 });
       doc.fontSize(8)
-         .fillColor('#38bdf8')
-         .text('Sertifikatni tekshirish', rightX, height - 55, { link: verifyUrl, underline: true });
+         .fillColor('#526777')
+         .text('QR ORQALI TEKSHIRISH', 125, height - 57, { width: 132, align: 'center', characterSpacing: 0.7 });
       doc.fontSize(8)
-         .fillColor('#38bdf8')
-         .text('Botga o‘tish', rightX, height - 40, { link: botUrl, underline: true });
+         .fillColor('#102a43')
+         .text(certificateNumber, 125, height - 43, { width: 132, align: 'center' });
+
+      // Original seal and signature area.
+      const sealX = width - 208;
+      const sealY = height - 116;
+      doc.circle(sealX, sealY, 38).lineWidth(2).stroke('#d8a93a');
+      doc.circle(sealX, sealY, 30).lineWidth(1).stroke('#d8a93a');
+      doc.fontSize(8).fillColor('#b0811b').text('VERIFIED', sealX - 27, sealY - 5, { width: 54, align: 'center' });
+      doc.fontSize(10).fillColor('#526777').text(`Sana: ${issueDateText}`, width - 335, height - 164, { width: 190, align: 'right' });
+      doc.moveTo(width - 338, height - 116).lineTo(width - 145, height - 116).lineWidth(1).stroke('#102a43');
+      doc.fontSize(11).fillColor('#102a43').text('Bilim Sinovi jamoasi', width - 338, height - 105, { width: 193, align: 'right' });
+      doc.fontSize(8).fillColor('#526777').text(`Telegram: @${botUsername}`, width - 338, height - 87, { width: 193, align: 'right' });
+      doc.fontSize(8).fillColor('#1e7f91').text('Sertifikatni tekshirish', width - 338, height - 65, { width: 193, align: 'right', link: verifyUrl, underline: true });
+      doc.fontSize(8).fillColor('#1e7f91').text('Botga o‘tish', width - 338, height - 50, { width: 193, align: 'right', link: botUrl, underline: true });
 
       doc.end();
 

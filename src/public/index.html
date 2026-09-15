@@ -932,7 +932,12 @@
           <h3><i class="fa-brands fa-telegram text-primary"></i> O‘quvchi bilan chat</h3>
           <small id="chat-user-meta" class="text-muted">Telegram foydalanuvchisi</small>
         </div>
-        <button class="btn-close" data-close="modal-user-chat">&times;</button>
+        <div class="chat-header-actions">
+          <button type="button" id="clear-user-chat" class="btn btn-danger btn-sm" title="Paneldagi yuborilgan xabarlar tarixini o‘chirish">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+          <button class="btn-close" data-close="modal-user-chat">&times;</button>
+        </div>
       </div>
       <div id="user-chat-history" class="user-chat-history">
         <div class="chat-empty-state"><i class="fa-regular fa-comments"></i><span>Hali xabar yuborilmagan</span></div>

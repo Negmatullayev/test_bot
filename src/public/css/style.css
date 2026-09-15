@@ -193,6 +193,12 @@ body {
   align-items: flex-start;
 }
 
+.chat-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .user-chat-history {
   display: flex;
   flex-direction: column;

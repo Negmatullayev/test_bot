@@ -934,6 +934,18 @@ function renderUserChatHistory(userId) {
   history.scrollTop = history.scrollHeight;
 }
 
+document.getElementById('clear-user-chat')?.addEventListener('click', () => {
+  const userId = document.getElementById('chat-user-id').value;
+  if (!userId || !(userChatMessages.get(userId) || []).length) {
+    showToast('O‘chiriladigan xabarlar tarixi yo‘q', 'info');
+    return;
+  }
+  if (!confirm('Ushbu o‘quvchi bilan paneldagi yuborilgan xabarlar tarixini o‘chirasizmi?')) return;
+  userChatMessages.delete(userId);
+  renderUserChatHistory(userId);
+  showToast('Chat tarixi o‘chirildi', 'success');
+});
+
 document.getElementById('chat-message')?.addEventListener('input', (event) => {
   document.getElementById('chat-char-count').innerText = event.target.value.length;
 });

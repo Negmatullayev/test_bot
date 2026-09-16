@@ -419,6 +419,25 @@
                 </button>
               </div>
 
+              <div class="paste-question-panel">
+                <div class="manual-question-header">
+                  <div>
+                    <h4><i class="fa-solid fa-paste"></i> Ko‘p savolni bitta matndan qo‘shish</h4>
+                    <p>Har bir savol raqam bilan, variantlar A-D bilan, javob esa <b>Javob: A</b> ko‘rinishida yoziladi.</p>
+                  </div>
+                  <span class="badge badge-info">Avtomatik ajratish</span>
+                </div>
+                <textarea id="paste-questions-text" class="paste-questions-text" rows="12" placeholder="1. Savol matni?&#10;A) Birinchi variant&#10;B) Ikkinchi variant&#10;C) Uchinchi variant&#10;D) To‘rtinchi variant&#10;Javob: B&#10;&#10;2. Keyingi savol?&#10;A) ...&#10;B) ...&#10;Javob: A"></textarea>
+                <div class="paste-question-actions">
+                  <span id="paste-questions-status" class="form-hint text-muted">Hali savol ajratilmadi</span>
+                  <div>
+                    <button type="button" id="btn-preview-pasted" class="btn btn-secondary"><i class="fa-solid fa-eye"></i> Ajratib ko‘rish</button>
+                    <button type="button" id="btn-save-pasted" class="btn btn-success"><i class="fa-solid fa-database"></i> Hammasini saqlash</button>
+                  </div>
+                </div>
+                <div id="paste-questions-preview" class="paste-questions-preview" style="display: none;"></div>
+              </div>
+
               <div class="manual-question-panel">
                 <div class="manual-question-header">
                   <div>

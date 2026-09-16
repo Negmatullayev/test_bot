@@ -690,6 +690,92 @@ function handleBulkFileSelect(file) {
   chip.innerText = `📄 ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
 }
 
+function parsePastedQuestions(rawText) {
+  const blocks = String(rawText || '')
+    .replace(/\r/g, '')
+    .split(/(?=^\s*\d+\s*[.)]\s*)/m)
+    .map((block) => block.trim())
+    .filter(Boolean);
+  const questions = [];
+  const errors = [];
+
+  blocks.forEach((block, index) => {
+    const lines = block.split('\n').map((line) => line.trim()).filter(Boolean);
+    const firstLine = lines.shift() || '';
+    const questionText = firstLine.replace(/^\d+\s*[.)]\s*/, '').trim();
+    const optionTexts = { A: '', B: '', C: '', D: '' };
+    let currentKey = null;
+    let correctAnswer = '';
+    let explanation = '';
+
+    lines.forEach((line) => {
+      const answerMatch = line.match(/^(?:javob|answer|to‘g‘ri\s+javob|togri\s+javob)\s*[:\-]\s*([ABCD])/i);
+      const optionMatch = line.match(/^([ABCD])\s*[).:\-]\s*(.*)$/i);
+      const explanationMatch = line.match(/^(?:izoh|explanation)\s*[:\-]\s*(.*)$/i);
+      if (answerMatch) correctAnswer = answerMatch[1].toUpperCase();
+      else if (explanationMatch) explanation = explanationMatch[1].trim();
+      else if (optionMatch) {
+        currentKey = optionMatch[1].toUpperCase();
+        optionTexts[currentKey] = optionMatch[2].trim();
+      } else if (currentKey) {
+        optionTexts[currentKey] = `${optionTexts[currentKey]} ${line}`.trim();
+      }
+    });
+
+    const options = Object.entries(optionTexts)
+      .filter(([, text]) => text)
+      .map(([key, text]) => ({ key, text }));
+    const missing = [];
+    if (!questionText) missing.push('savol matni');
+    if (!optionTexts.A || !optionTexts.B) missing.push('A va B variantlari');
+    if (!correctAnswer || !optionTexts[correctAnswer]) missing.push('Javob: A/B/C/D');
+    if (missing.length) errors.push(`${index + 1}-savol: ${missing.join(', ')} yetishmaydi`);
+    else questions.push({ questionText, options, correctAnswer, explanation });
+  });
+
+  return { questions, errors, total: blocks.length };
+}
+
+function renderPastedQuestionPreview(parsed) {
+  const preview = document.getElementById('paste-questions-preview');
+  const status = document.getElementById('paste-questions-status');
+  status.innerText = `${parsed.questions.length}/${parsed.total} ta savol tayyor${parsed.errors.length ? `, ${parsed.errors.length} ta xato` : ''}`;
+  preview.style.display = 'block';
+  preview.innerHTML = `${parsed.errors.length ? `<div class="paste-errors">${parsed.errors.map((error) => `<div>❌ ${escapeHtml(error)}</div>`).join('')}</div>` : ''}<div class="paste-valid-list">${parsed.questions.slice(0, 12).map((question, index) => `<div><b>${index + 1}. ${escapeHtml(question.questionText)}</b> <span class="badge badge-active">Javob: ${question.correctAnswer}</span></div>`).join('')}${parsed.questions.length > 12 ? `<small>...yana ${parsed.questions.length - 12} ta</small>` : ''}</div>`;
+}
+
+document.getElementById('btn-preview-pasted')?.addEventListener('click', () => {
+  const parsed = parsePastedQuestions(document.getElementById('paste-questions-text').value);
+  if (!parsed.total) return showToast('Avval savollarni matn ko‘rinishida joylang', 'error');
+  renderPastedQuestionPreview(parsed);
+});
+
+document.getElementById('btn-save-pasted')?.addEventListener('click', async () => {
+  const subjectId = document.getElementById('bulk-subject-select').value;
+  const testId = document.getElementById('bulk-test-select').value || null;
+  const parsed = parsePastedQuestions(document.getElementById('paste-questions-text').value);
+  if (!subjectId) return showToast('Avval fanni tanlang', 'error');
+  if (!parsed.total) return showToast('Savollar matnini kiriting', 'error');
+  renderPastedQuestionPreview(parsed);
+  if (parsed.errors.length) return showToast('Xatolarni tuzating, keyin saqlang', 'error');
+  if (!confirm(`${parsed.questions.length} ta savolni bazaga qo‘shasizmi?`)) return;
+
+  let saved = 0;
+  for (const question of parsed.questions) {
+    const res = await apiFetch('/api/questions', {
+      method: 'POST',
+      body: JSON.stringify({ subjectId, testId, ...question, difficulty: 'medium' })
+    });
+    if (!res || !res.success) return showToast(`${saved} ta saqlandi, keyingi savolda xato yuz berdi`, 'error');
+    saved++;
+  }
+  document.getElementById('paste-questions-text').value = '';
+  document.getElementById('paste-questions-preview').style.display = 'none';
+  document.getElementById('paste-questions-status').innerText = 'Hali savol ajratilmadi';
+  showToast(`${saved} ta savol muvaffaqiyatli saqlandi`, 'success');
+  loadDashboardStats();
+});
+
 document.getElementById('btn-save-manual-question')?.addEventListener('click', async () => {
   const subjectId = document.getElementById('bulk-subject-select').value;
   const testId = document.getElementById('bulk-test-select').value || null;

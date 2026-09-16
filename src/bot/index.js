@@ -77,8 +77,12 @@ function initBot() {
     const text = ctx.message.text.trim();
     if (!ctx.dbUser || ctx.dbUser.role === 'admin' || text.startsWith('/')) return next();
 
-    const adminTelegramId = process.env.ADMIN_TELEGRAM_ID;
-    if (!adminTelegramId) return next();
+    const adminUser = await User.findOne({ role: 'admin', telegramId: { $ne: null } }).select('telegramId');
+    const adminTelegramId = process.env.ADMIN_TELEGRAM_ID || adminUser?.telegramId;
+    if (!adminTelegramId) {
+      console.warn('[Student Reply] ADMIN_TELEGRAM_ID sozlanmagan va admin Telegram ID bazada topilmadi.');
+      return next();
+    }
 
     try {
       const displayName = `${ctx.dbUser.firstName || ''} ${ctx.dbUser.lastName || ''}`.trim() || ctx.dbUser.username || 'O‘quvchi';

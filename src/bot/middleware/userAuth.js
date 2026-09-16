@@ -9,6 +9,8 @@ const userAuthMiddleware = async (ctx, next) => {
   const username = ctx.from.username || '';
 
   try {
+    const isLoginEvent = ctx.message?.text?.trim().startsWith('/start');
+    const isLogoutEvent = ['/stop', '/logout'].includes(ctx.message?.text?.trim());
     let user = await User.findOne({ telegramId });
 
     if (!user) {
@@ -18,13 +20,17 @@ const userAuthMiddleware = async (ctx, next) => {
         lastName,
         username,
         role: 'user',
-        lastActive: new Date()
+        lastActive: new Date(),
+        lastLoginAt: isLoginEvent ? new Date() : null,
+        lastLogoutAt: null
       });
     } else {
       user.firstName = firstName;
       user.lastName = lastName;
       user.username = username;
       user.lastActive = new Date();
+      if (isLoginEvent) user.lastLoginAt = new Date();
+      if (isLogoutEvent) user.lastLogoutAt = new Date();
       await user.save();
     }
 

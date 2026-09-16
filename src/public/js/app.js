@@ -785,6 +785,17 @@ document.getElementById('bulk-import-form')?.addEventListener('submit', async (e
 });
 
 // 6. USERS MANAGEMENT
+function formatUserDate(value) {
+  if (!value) return '—';
+  return new Date(value).toLocaleString('uz-UZ', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
 async function loadUsers() {
   const search = document.getElementById('users-search').value.trim();
   const status = document.getElementById('users-filter-status').value;
@@ -802,7 +813,7 @@ async function loadUsers() {
   document.getElementById('users-status-label').innerText = status === 'active' ? 'Aktiv' : status === 'blocked' ? 'Bloklangan' : 'Barchasi';
 
   if (!res || !res.data || res.data.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" class="text-center">O‘quvchilar topilmadi</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9" class="text-center">O‘quvchilar topilmadi</td></tr>`;
     return;
   }
 
@@ -811,6 +822,11 @@ async function loadUsers() {
       <td><b>${escapeHtml(u.firstName || '')} ${escapeHtml(u.lastName || '')}</b></td>
       <td>@${u.username || 'yo‘q'}</td>
       <td><code>${u.telegramId || '—'}</code></td>
+      <td class="user-time-cell">
+        <small><b>Kirdi:</b> ${formatUserDate(u.lastLoginAt)}</small>
+        <small><b>Faol:</b> ${formatUserDate(u.lastActive)}</small>
+        <small><b>Chiqdi:</b> ${formatUserDate(u.lastLogoutAt)}</small>
+      </td>
       <td><b>${u.totalScore}</b> / ${u.xp} XP</td>
       <td>Level ${u.level} (${u.levelName})</td>
       <td>${u.totalTests} ta</td>

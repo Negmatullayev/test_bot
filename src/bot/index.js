@@ -25,6 +25,12 @@ const {
   handleGetCertificate
 } = require('./handlers/testHandler');
 const { setBotInstance } = require('../services/botService');
+const User = require('../models/User');
+
+const escapeHtml = (value) => String(value)
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;');
 
 function initBot() {
   const token = process.env.BOT_TOKEN;
@@ -46,6 +52,13 @@ function initBot() {
   bot.command('help', handleHelp);
   bot.command('profile', handleProfileMenu);
   bot.command('rating', handleLeaderboardMenu);
+  bot.command(['stop', 'logout'], async (ctx) => {
+    if (ctx.dbUser) {
+      ctx.dbUser.lastLogoutAt = new Date();
+      await ctx.dbUser.save();
+    }
+    await ctx.reply('Sizning chiqish vaqtingiz qayd etildi. Qayta kirish uchun /start bosing.');
+  });
 
   // Main Reply Keyboard Menu triggers
   bot.hears('📝 Test ishlash', handleStartTestFlow);
@@ -58,6 +71,30 @@ function initBot() {
   bot.hears('🔥 Daily Challenge', handleDailyChallenge);
   bot.hears('🎲 Random Test', handleRandomTest);
   bot.hears(['🏠 Bosh menyu', '❌ Bekor qilish'], handleStart);
+
+  // Forward ordinary student replies to the admin Telegram account.
+  bot.on('text', async (ctx, next) => {
+    const text = ctx.message.text.trim();
+    if (!ctx.dbUser || ctx.dbUser.role === 'admin' || text.startsWith('/')) return next();
+
+    const adminTelegramId = process.env.ADMIN_TELEGRAM_ID;
+    if (!adminTelegramId) return next();
+
+    try {
+      const displayName = `${ctx.dbUser.firstName || ''} ${ctx.dbUser.lastName || ''}`.trim() || ctx.dbUser.username || 'O‘quvchi';
+      await bot.telegram.sendMessage(
+        Number(adminTelegramId),
+        `📩 <b>O‘quvchidan yangi javob</b>\n\n` +
+        `👤 ${escapeHtml(displayName)}\n` +
+        `🆔 <code>${ctx.dbUser.telegramId}</code>\n\n` +
+        `${escapeHtml(text)}`,
+        { parse_mode: 'HTML' }
+      );
+      await ctx.reply('✅ Xabaringiz adminga yuborildi.');
+    } catch (error) {
+      console.error('[Student Reply Forward Error]:', error.message);
+    }
+  });
 
   // Inline Actions
   bot.action(/^sub_(.+)$/, async (ctx) => {

@@ -76,6 +76,7 @@ MONGODB_URI=mongodb+srv://abubakrnigmatullayev56_db_user:<db_password>@cluster0.
 # BotFather'dan olingan token
 BOT_TOKEN=7777777777:AAFakeTokenForLocalDevReplaceWithRealOne
 BOT_USERNAME=AbubakrTest2026Bot
+ADMIN_TELEGRAM_ID=123456789
 
 # Sertifikatdagi tekshiruv va bot havolalari
 APP_URL=https://test-bot-vcjo.onrender.com

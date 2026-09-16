@@ -418,6 +418,42 @@
                   <span>Bazada Saqlash</span>
                 </button>
               </div>
+
+              <div class="manual-question-panel">
+                <div class="manual-question-header">
+                  <div>
+                    <h4><i class="fa-solid fa-keyboard"></i> Savolni qo‘lda kiritish</h4>
+                    <p>Faylsiz bitta savolni tezda bazaga qo‘shing.</p>
+                  </div>
+                  <span class="badge badge-info">Tezkor qo‘shish</span>
+                </div>
+                <div id="manual-question-form">
+                  <div class="form-group">
+                    <label for="manual-question-text">Savol matni *</label>
+                    <textarea id="manual-question-text" rows="3" placeholder="Savolni yozing..." required></textarea>
+                  </div>
+                  <div class="form-row manual-options-row">
+                    <div class="form-group flex-1"><label>A varianti *</label><input id="manual-option-a" required placeholder="A javob"></div>
+                    <div class="form-group flex-1"><label>B varianti *</label><input id="manual-option-b" required placeholder="B javob"></div>
+                  </div>
+                  <div class="form-row manual-options-row">
+                    <div class="form-group flex-1"><label>C varianti</label><input id="manual-option-c" placeholder="C javob"></div>
+                    <div class="form-group flex-1"><label>D varianti</label><input id="manual-option-d" placeholder="D javob"></div>
+                  </div>
+                  <div class="form-row manual-options-row">
+                    <div class="form-group flex-1">
+                      <label>To‘g‘ri javob *</label>
+                      <select id="manual-correct-answer" required><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select>
+                    </div>
+                    <div class="form-group flex-1">
+                      <label>Qiyinchilik</label>
+                      <select id="manual-difficulty"><option value="easy">Oson</option><option value="medium" selected>O‘rtacha</option><option value="hard">Qiyin</option></select>
+                    </div>
+                  </div>
+                  <div class="form-group"><label>Izoh (ixtiyoriy)</label><input id="manual-explanation" placeholder="To‘g‘ri javob izohi"></div>
+                  <button type="button" id="btn-save-manual-question" class="btn btn-success"><i class="fa-solid fa-plus"></i> Savolni bazaga qo‘shish</button>
+                </div>
+              </div>
             </form>
 
             <!-- Preview Results Section -->

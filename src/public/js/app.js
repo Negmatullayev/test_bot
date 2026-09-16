@@ -690,6 +690,50 @@ function handleBulkFileSelect(file) {
   chip.innerText = `📄 ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
 }
 
+document.getElementById('btn-save-manual-question')?.addEventListener('click', async () => {
+  const subjectId = document.getElementById('bulk-subject-select').value;
+  const testId = document.getElementById('bulk-test-select').value || null;
+  const questionText = document.getElementById('manual-question-text').value.trim();
+  const optionTexts = {
+    A: document.getElementById('manual-option-a').value.trim(),
+    B: document.getElementById('manual-option-b').value.trim(),
+    C: document.getElementById('manual-option-c').value.trim(),
+    D: document.getElementById('manual-option-d').value.trim()
+  };
+  const correctAnswer = document.getElementById('manual-correct-answer').value;
+
+  if (!subjectId) return showToast('Avval fanni tanlang', 'error');
+  if (!questionText || !optionTexts.A || !optionTexts.B) return showToast('Savol, A va B variantlarini kiriting', 'error');
+  if (!optionTexts[correctAnswer]) return showToast(`To‘g‘ri javob ${correctAnswer} varianti to‘ldirilmagan`, 'error');
+
+  const options = Object.entries(optionTexts)
+    .filter(([, text]) => text)
+    .map(([key, text]) => ({ key, text }));
+  const res = await apiFetch('/api/questions', {
+    method: 'POST',
+    body: JSON.stringify({
+      subjectId,
+      testId,
+      questionText,
+      options,
+      correctAnswer,
+      difficulty: document.getElementById('manual-difficulty').value,
+      explanation: document.getElementById('manual-explanation').value.trim()
+    })
+  });
+
+  if (!res || !res.success) {
+    showToast(res?.message || 'Savolni saqlab bo‘lmadi', 'error');
+    return;
+  }
+
+  document.getElementById('manual-question-form').querySelectorAll('input, textarea').forEach((field) => { field.value = ''; });
+  document.getElementById('manual-correct-answer').value = 'A';
+  document.getElementById('manual-difficulty').value = 'medium';
+  showToast('Savol bazaga muvaffaqiyatli qo‘shildi', 'success');
+  loadDashboardStats();
+});
+
 // Bulk Preview
 document.getElementById('btn-preview-bulk')?.addEventListener('click', async () => {
   const subjectId = document.getElementById('bulk-subject-select').value;

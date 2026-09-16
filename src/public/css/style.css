@@ -137,6 +137,37 @@ body {
   gap: 8px;
 }
 
+.manual-question-panel {
+  margin-top: 24px;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.48);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.manual-question-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.manual-question-header h4 {
+  color: var(--text-main);
+  font-size: 1rem;
+}
+
+.manual-question-header p {
+  margin-top: 5px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.manual-options-row {
+  gap: 12px;
+}
+
 .form-meta {
   display: flex;
   align-items: center;
